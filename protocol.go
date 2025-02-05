@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"strconv"
 	"strings"
 )
 
@@ -16,37 +15,6 @@ func doConfirmLeader(ctx context.Context, op *Op, conn net.Conn, _ string) {
 	if hl, _ := op.HasLock(); !hl {
 		sb.Reset()
 		sb.WriteString("\n")
-	}
-
-	b := []byte(sb.String())
-	conn.Write(b)
-}
-
-func doWrite(ctx context.Context, op *Op, conn net.Conn, msg string) {
-	var sb strings.Builder
-	if hl, _ := op.HasLock(); hl {
-		ss := strings.Split(msg, " ")
-		payload := ss[1]
-		var noappend bool
-		if len(ss) >= 3 {
-			if ss[2] == FlagNoAppend {
-				noappend = true
-			}
-		}
-
-		decoded, _ := base64.StdEncoding.DecodeString(payload)
-		var kv KeyValue
-		err := json.Unmarshal(decoded, &kv)
-		if err != nil {
-			sb.WriteString(op.buildAckReply(err))
-		} else {
-			sb.WriteString(op.buildAckReply(op.Put(ctx, kv, PutOptions{
-				DirectWrite: true,
-				NoAppend:    noappend,
-			})))
-		}
-	} else {
-		sb.WriteString("\n") // not leader, possible even if previously confirmed
 	}
 
 	b := []byte(sb.String())
@@ -147,120 +115,14 @@ func doMembers(ctx context.Context, op *Op, conn net.Conn, msg string) {
 	conn.Write([]byte(reply))
 }
 
-func doCreateSemaphore(ctx context.Context, op *Op, conn net.Conn, msg string) {
-	reply := op.buildAckReply(nil)
-	func() {
-		op.mtxSem.Lock()
-		defer op.mtxSem.Unlock()
-		ss := strings.Split(msg, " ")
-		name, slimit, caller := ss[1], ss[2], ss[3]
-		limit, err := strconv.Atoi(slimit)
-		if err != nil {
-			reply = op.buildAckReply(err)
-			return
-		}
-
-		// See if this semaphore already exists.
-		s, err := readSemaphoreEntry(ctx, op, name)
-		if err != nil {
-			err = createSemaphoreEntry(ctx, op, name, caller, limit)
-			if err != nil {
-				reply = op.buildAckReply(err)
-				return
-			}
-
-			// Read again after create.
-			s, err = readSemaphoreEntry(ctx, op, name)
-			if err != nil {
-				reply = op.buildAckReply(err)
-				return
-			}
-		}
-
-		slmt, _ := strconv.Atoi(strings.Split(s.Id, "=")[1])
-		if slmt != limit {
-			err = fmt.Errorf("semaphore already exists with a different limit")
-			reply = op.buildAckReply(err)
-			return
-		}
-	}()
-
-	b := []byte(reply)
-	conn.Write(b)
-}
-
-func doAcquireSemaphore(ctx context.Context, op *Op, conn net.Conn, msg string) {
-	reply := op.buildAckReply(nil)
-	func() {
-		op.mtxSem.Lock()
-		defer op.mtxSem.Unlock()
-		ss := strings.Split(msg, " ")
-		name, caller := ss[1], ss[2]
-		go ensureLiveness(ctx, op)
-		op.ensureCh <- name
-		s, err := readSemaphoreEntry(ctx, op, name) // to get the current limit
-		if err != nil {
-			err = fmt.Errorf("0:%v", err) // final
-			reply = op.buildAckReply(err)
-			return
-		}
-
-		limit, _ := strconv.Atoi(strings.Split(s.Id, "=")[1])
-		retry, err := createAcquireSemaphoreEntry(ctx, op, name, caller, limit)
-		if err != nil {
-			switch {
-			case retry:
-				err = fmt.Errorf("1:%v", err) // can retry
-			default:
-				err = fmt.Errorf("0:%v", err) // final
-			}
-
-			reply = op.buildAckReply(err)
-			return
-		}
-	}()
-
-	b := []byte(reply)
-	conn.Write(b)
-}
-
-func doReleaseSemaphore(ctx context.Context, op *Op, conn net.Conn, msg string) {
-	reply := op.buildAckReply(nil)
-	func() {
-		op.mtxSem.Lock()
-		defer op.mtxSem.Unlock()
-		ss := strings.Split(msg, " ")
-		name, caller := ss[1], ss[2]
-		s, err := readSemaphoreEntry(ctx, op, name) // to get the current limit
-		if err != nil {
-			reply = op.buildAckReply(err)
-			return
-		}
-
-		limit, _ := strconv.Atoi(strings.Split(s.Id, "=")[1])
-		err = releaseSemaphore(ctx, op, name, caller, s.Value, limit)
-		if err != nil {
-			reply = op.buildAckReply(err)
-			return
-		}
-	}()
-
-	b := []byte(reply)
-	conn.Write(b)
-}
-
 func handleMsg(ctx context.Context, op *Op, conn net.Conn) {
 	defer conn.Close()
 	fns := map[string]func(ctx context.Context, op *Op, conn net.Conn, msg string){
-		CmdLeader:           doConfirmLeader,    // confirm leader only
-		CmdWrite + " ":      doWrite,            // actual write
-		CmdSend + " ":       doSend,             // Send() API
-		CmdBroadcast + " ":  doBroadcast,        // Broadcast() API
-		CmdPing + " ":       doHeartbeat,        // heartbeat
-		CmdMembers + " ":    doMembers,          // broadcast online members
-		CmdSemaphore + " ":  doCreateSemaphore,  // create semaphore (we are leader)
-		CmdSemAcquire + " ": doAcquireSemaphore, // acquire semaphore (we are leader)
-		CmdSemRelease + " ": doReleaseSemaphore, // release semaphore (we are leader)
+		CmdLeader:          doConfirmLeader, // confirm leader only
+		CmdSend + " ":      doSend,          // Send() API
+		CmdBroadcast + " ": doBroadcast,     // Broadcast() API
+		CmdPing + " ":      doHeartbeat,     // heartbeat
+		CmdMembers + " ":   doMembers,       // broadcast online members
 	}
 
 	addSpace := func(s string) string {

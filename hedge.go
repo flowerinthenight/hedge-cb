@@ -3,6 +3,7 @@ package hedge
 import (
 	"bufio"
 	"context"
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -16,13 +17,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"cloud.google.com/go/spanner"
 	pb "github.com/flowerinthenight/hedge-cb/proto/v1"
 	spindle "github.com/flowerinthenight/spindle-cb"
 	"github.com/google/uuid"
 	gaxv2 "github.com/googleapis/gax-go/v2"
 	"github.com/hashicorp/memberlist"
-	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -219,13 +218,13 @@ func WithLogger(v *log.Logger) Option { return withLogger{v} }
 
 // Op is our main instance for hedge operations.
 type Op struct {
-	hostPort      string          // this instance's id; address:port
-	grpcHostPort  string          // default is host:port+1 (from `hostPort`)
-	spannerClient *spanner.Client // both for spindle and hedge
-	lockTable     string          // spindle lock table
-	lockName      string          // spindle lock name
-	lockTimeout   int64           // spindle's lock lease duration in ms
-	logTable      string          // append-only log table
+	hostPort     string  // this instance's id; address:port
+	grpcHostPort string  // default is host:port+1 (from `hostPort`)
+	db           *sql.DB // for spindle
+	lockTable    string  // spindle lock table
+	lockName     string  // spindle lock name
+	lockTimeout  int64   // spindle's lock lease duration in ms
+	logTable     string  // append-only log table
 
 	cbLeader           spindle.FnLeaderCallback
 	cbLeaderData       interface{}
@@ -257,9 +256,8 @@ type Op struct {
 
 // String implements the Stringer interface.
 func (op *Op) String() string {
-	return fmt.Sprintf("hostport:%s;spindle:%v;%v;%v",
+	return fmt.Sprintf("hostport:%s;spindle:%v;%v",
 		op.hostPort,
-		op.spannerClient.DatabaseName(),
 		op.lockTable,
 		op.logTable,
 	)
@@ -285,8 +283,8 @@ func (op *Op) Run(ctx context.Context, done ...chan error) error {
 	}(&err)
 
 	// Some housekeeping.
-	if op.spannerClient == nil {
-		err = fmt.Errorf("hedge: Spanner client cannot be nil")
+	if op.db == nil {
+		err = fmt.Errorf("hedge: sql.DB cannot be nil")
 		return err
 	}
 
@@ -358,7 +356,7 @@ func (op *Op) Run(ctx context.Context, done ...chan error) error {
 
 	// Setup and start our internal spindle object.
 	op.Lock = spindle.New(
-		op.spannerClient,
+		op.db,
 		op.lockTable,
 		fmt.Sprintf("hedge/spindle/lockname/%v", op.lockName),
 		spindle.WithDuration(op.lockTimeout),
@@ -543,50 +541,6 @@ func (op *Op) Run(ctx context.Context, done ...chan error) error {
 	return nil
 }
 
-// NewSemaphore returns a distributed semaphore object.
-func (op *Op) NewSemaphore(ctx context.Context, name string, limit int) (*Semaphore, error) {
-	if op.logTable == "" {
-		return nil, ErrNotSupported
-	}
-
-	if op.active.Load() != 1 {
-		return nil, ErrNotRunning
-	}
-
-	if strings.Contains(name, " ") {
-		return nil, fmt.Errorf("name cannot have whitespace(s)")
-	}
-
-	conn, err := op.getLeaderConn(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if conn != nil {
-		defer conn.Close()
-	}
-
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "%s %s %d %s\n", CmdSemaphore, name, limit, op.hostPort)
-	reply, err := op.send(conn, sb.String())
-	if err != nil {
-		return nil, err
-	}
-
-	switch {
-	case strings.HasPrefix(reply, CmdAck):
-		ss := strings.Split(reply, " ")
-		if len(ss) > 1 { // failed
-			dec, _ := base64.StdEncoding.DecodeString(ss[1])
-			return nil, fmt.Errorf(string(dec))
-		}
-	default:
-		return nil, ErrNotSupported
-	}
-
-	return &Semaphore{name, limit, op}, nil
-}
-
 // NewSoS returns an object for writing data to spill-over
 // storage across the cluster. The order of writing is local
 // memory, local disk, other pod's memory, other pod's disk,
@@ -600,162 +554,6 @@ func (op *Op) NewSoS(name string, opts ...*SoSOptions) *SoS {
 
 	op.soss[name] = newSoS(name, op, opts...)
 	return op.soss[name]
-}
-
-// Get reads a key (or keys) from Op.
-// The values of limit are:
-//
-//	limit = 0  --> (default) latest only
-//	limit = -1 --> all (latest to oldest, [0]=latest)
-//	limit = -2 --> oldest version only
-//	limit > 0  --> items behind latest; 3 means latest + 2 versions behind, [0]=latest
-func (op *Op) Get(ctx context.Context, key string, limit ...int64) ([]KeyValue, error) {
-	if op.logTable == "" {
-		return nil, ErrNotSupported
-	}
-
-	ret := []KeyValue{}
-	var q strings.Builder
-	fmt.Fprintf(&q, "select key, value, timestamp ")
-	fmt.Fprintf(&q, "from %s ", op.logTable)
-	fmt.Fprintf(&q, "where key = @key and timestamp is not null ")
-	fmt.Fprintf(&q, "order by timestamp desc limit 1")
-
-	if len(limit) > 0 {
-		switch {
-		case limit[0] > 0:
-			q.Reset()
-			fmt.Fprintf(&q, "select key, value, timestamp ")
-			fmt.Fprintf(&q, "from %s ", op.logTable)
-			fmt.Fprintf(&q, "where key = @key and timestamp is not null ")
-			fmt.Fprintf(&q, "order by timestamp desc limit %v", limit[0])
-		case limit[0] == -1:
-			q.Reset()
-			fmt.Fprintf(&q, "select key, value, timestamp ")
-			fmt.Fprintf(&q, "from %s ", op.logTable)
-			fmt.Fprintf(&q, "where key = @key and timestamp is not null ")
-			fmt.Fprintf(&q, "order by timestamp desc")
-		case limit[0] == -2:
-			q.Reset()
-			fmt.Fprintf(&q, "select key, value, timestamp ")
-			fmt.Fprintf(&q, "from %s ", op.logTable)
-			fmt.Fprintf(&q, "where key = @key and timestamp is not null ")
-			fmt.Fprintf(&q, "order by timestamp limit 1")
-		}
-	}
-
-	stmt := spanner.Statement{SQL: q.String(), Params: map[string]interface{}{"key": key}}
-	iter := op.spannerClient.Single().Query(ctx, stmt)
-	defer iter.Stop()
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-
-		if err != nil {
-			return ret, err
-		}
-
-		var li LogItem
-		err = row.ToStruct(&li)
-		if err != nil {
-			return ret, err
-		}
-
-		ret = append(ret, KeyValue{
-			Key:       li.Key,
-			Value:     li.Value,
-			Timestamp: li.Timestamp,
-		})
-	}
-
-	return ret, nil
-}
-
-type PutOptions struct {
-	// If true, do a direct write, no need to fwd to leader.
-	DirectWrite bool
-
-	// If true, don't do an append-write; overwrite the latest. Note that even
-	// if you set this to true, if you do another Put the next time with this
-	// field set as false (default), the previous write will now be gone, or
-	// will now be part of the history.
-	NoAppend bool
-}
-
-// Put saves a key/value to Op. This call will try to block, at least roughly
-// until spindle's timeout, to wait for the leader's availability to do actual
-// writes before returning.
-func (op *Op) Put(ctx context.Context, kv KeyValue, po ...PutOptions) error {
-	if op.logTable == "" {
-		return ErrNotSupported
-	}
-
-	var err error
-	var direct, noappend, hl bool
-	if len(po) > 0 {
-		direct = po[0].DirectWrite
-		noappend = po[0].NoAppend
-	} else {
-		hl, _ = op.HasLock()
-	}
-
-	id := uuid.NewString()
-	if noappend {
-		id = "-"
-	}
-
-	if direct || hl {
-		b, _ := json.Marshal(kv)
-		op.logger.Printf("[Put] leader: direct write: %v", string(b))
-		_, err := op.spannerClient.Apply(ctx, []*spanner.Mutation{
-			spanner.InsertOrUpdate(op.logTable,
-				[]string{"id", "key", "value", "leader", "timestamp"},
-				[]interface{}{id, kv.Key, kv.Value, op.hostPort, spanner.CommitTimestamp},
-			),
-		})
-
-		return err
-	}
-
-	// For non-leaders, we confirm the leader via spindle, and if so, ask leader to do the
-	// actual write for us. Let's do a couple retries up to spindle's timeout.
-	conn, err := op.getLeaderConn(ctx)
-	if err != nil {
-		return err
-	}
-
-	if conn != nil {
-		defer conn.Close()
-	}
-
-	b, _ := json.Marshal(kv)
-	enc := base64.StdEncoding.EncodeToString(b)
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "%s %s\n", CmdWrite, enc)
-	if noappend {
-		sb.Reset()
-		fmt.Fprintf(&sb, "%s %s %s\n", CmdWrite, enc, FlagNoAppend)
-	}
-
-	reply, err := op.send(conn, sb.String())
-	if err != nil {
-		return err
-	}
-
-	switch {
-	case strings.HasPrefix(reply, CmdAck):
-		ss := strings.Split(reply, " ")
-		if len(ss) > 1 { // failed
-			dec, _ := base64.StdEncoding.DecodeString(ss[1])
-			return fmt.Errorf(string(dec))
-		}
-	default:
-		return ErrNoLeader
-	}
-
-	return nil
 }
 
 // Send sends msg to the current leader. Any node can send messages,
@@ -1348,19 +1146,19 @@ func (op *Op) delMember(id string) {
 // spindle object's lock table name will be lockTable, and lockName is the lock name. logTable will
 // serve as our append-only, distributed key/value storage table. If logTable is empty, Put, Get, and
 // Semaphore features will be disabled.
-func New(client *spanner.Client, hostPort, lockTable, lockName, logTable string, opts ...Option) *Op {
+func New(db *sql.DB, hostPort, lockTable, lockName, logTable string, opts ...Option) *Op {
 	op := &Op{
-		hostPort:      hostPort,
-		spannerClient: client,
-		lockTable:     lockTable,
-		lockName:      lockName,
-		logTable:      logTable,
-		members:       make(map[string]struct{}),
-		ensureCh:      make(chan string),
-		ensureDone:    make(chan struct{}, 1),
-		sosLock:       &sync.Mutex{},
-		soss:          map[string]*SoS{},
-		Lock:          &spindle.Lock{}, // init later
+		hostPort:   hostPort,
+		db:         db,
+		lockTable:  lockTable,
+		lockName:   lockName,
+		logTable:   logTable,
+		members:    make(map[string]struct{}),
+		ensureCh:   make(chan string),
+		ensureDone: make(chan struct{}, 1),
+		sosLock:    &sync.Mutex{},
+		soss:       map[string]*SoS{},
+		Lock:       &spindle.Lock{}, // init later
 	}
 
 	for _, opt := range opts {
