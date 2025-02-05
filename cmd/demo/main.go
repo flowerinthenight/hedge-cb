@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	dbstr        = flag.String("db", "", "fmt: projects/{v}/instances/{v}/databases/{v}")
+	dbstr        = flag.String("db", "", "sample fmt: postgres://user:pass@loc.rds.amazonaws.com:5432/db")
 	lockName     = flag.String("lockname", "hedge-demo-group", "lock name, common to all instances")
 	spindleTable = flag.String("spindletable", "testlease", "see https://github.com/flowerinthenight/spindle-cb for more info")
 	logTable     = flag.String("logtable", "", "the table for our log data (optional)")
