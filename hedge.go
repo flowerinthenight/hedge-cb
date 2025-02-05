@@ -17,7 +17,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	pb "github.com/flowerinthenight/hedge-cb/proto/v1"
+	pb "github.com/flowerinthenight/hedge-proto"
 	spindle "github.com/flowerinthenight/spindle-cb"
 	"github.com/google/uuid"
 	gaxv2 "github.com/googleapis/gax-go/v2"

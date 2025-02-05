@@ -5,6 +5,7 @@ go 1.23.6
 require (
 	github.com/apache/arrow/go/v17 v17.0.0
 	github.com/cespare/xxhash/v2 v2.3.0
+	github.com/flowerinthenight/hedge-proto v0.1.0
 	github.com/flowerinthenight/spindle-cb v0.1.10
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.14.1
@@ -13,7 +14,6 @@ require (
 	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c
 	golang.org/x/sync v0.11.0
 	google.golang.org/grpc v1.70.0
-	google.golang.org/protobuf v1.36.4
 )
 
 require (
@@ -49,4 +49,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.219.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250124145028-65684f501c47 // indirect
+	google.golang.org/protobuf v1.36.4 // indirect
 )

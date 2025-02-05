@@ -5,7 +5,7 @@ import (
 	"io"
 	"strconv"
 
-	pb "github.com/flowerinthenight/hedge-cb/proto/v1"
+	pb "github.com/flowerinthenight/hedge-proto"
 	"golang.org/x/sync/errgroup"
 )
 

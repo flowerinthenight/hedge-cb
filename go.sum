@@ -24,6 +24,8 @@ github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z
 github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/flowerinthenight/clockbound-ffi-go v0.1.11 h1:EEHZoJNntqFaRdHmQzn+PNUrmhKSxbliQuJF5Uk4/3k=
 github.com/flowerinthenight/clockbound-ffi-go v0.1.11/go.mod h1:LPrvpfRydmfYw2suB0iWoIWO7i65RjxQ30fF7/v3s1U=
+github.com/flowerinthenight/hedge-proto v0.1.0 h1:JnFbUGrTddE8wlxyzxzEa3ZVhZX8svJ3GAY1v5vmB1E=
+github.com/flowerinthenight/hedge-proto v0.1.0/go.mod h1:MX38DIqqM328L1TbbUcBmqEyo7eY7znOSdyKwakc6Rg=
 github.com/flowerinthenight/spindle-cb v0.1.10 h1:srxuHsc0IQP4Co8z8GOBIR5yhuv4LanIBhtoryuYnxY=
 github.com/flowerinthenight/spindle-cb v0.1.10/go.mod h1:E16IflJVifkgaJ3oxs8E7VLkUTigMPf4glPYNdkivoc=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
