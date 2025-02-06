@@ -1,0 +1,50 @@
+---
+name: main
+
+on:
+  push:
+    branches: [ main ]
+    tags: ['*']
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build
+    if: "!contains(github.event.commits[0].message, 'ci skip')"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+
+    - name: Run tests
+      run: |
+        ROOTDIR=$PWD
+        cd /tmp/
+        git clone https://github.com/aws/clock-bound
+        sudo cp -v clock-bound/clock-bound-ffi/include/clockbound.h /usr/include/
+        cd $ROOTDIR/
+        go test -v ./...
+
+    - name: Release from tags
+      if: startsWith(github.event.ref, 'refs/tags/v')
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: |
+        ROOTDIR=$PWD
+        cd /tmp/clock-bound/clock-bound-ffi/
+        cargo build --release
+        cd /tmp/clock-bound/
+        sudo cp -v clock-bound-ffi/include/clockbound.h /usr/include/
+        sudo cp -v target/release/libclockbound.a /usr/lib/
+        sudo cp -v target/release/libclockbound.so /usr/lib/
+        cd $ROOTDIR/example/
+        GOOS=linux GOARCH=amd64 go build -v
+        tar czvf hedge-${GITHUB_REF_NAME}-x86_64-linux.tar.gz example
+        gh release create ${GITHUB_REF_NAME} ./*.tar.gz --generate-notes
