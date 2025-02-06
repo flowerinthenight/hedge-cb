@@ -27,10 +27,10 @@ import (
 )
 
 var (
-	dbstr        = flag.String("db", "", "sample fmt: postgres://user:pass@loc.rds.amazonaws.com:5432/db")
-	lockName     = flag.String("lockname", "hedge-demo-group", "lock name, common to all instances")
-	spindleTable = flag.String("spindletable", "testlease", "see https://github.com/flowerinthenight/spindle-cb for more info")
-	logTable     = flag.String("logtable", "", "the table for our log data (optional)")
+	dbstr     = flag.String("db", "", "sample fmt: postgres://user:pass@loc.rds.amazonaws.com:5432/db")
+	lockName  = flag.String("lockname", "hedge-demo-group", "lock name, common to all instances")
+	lockTable = flag.String("locktable", "locktable", "see https://github.com/flowerinthenight/spindle-cb for more info")
+	logTable  = flag.String("logtable", "", "the table for our log data (optional)")
 )
 
 func main() {
@@ -84,7 +84,7 @@ func main() {
 		}
 	}(context.WithValue(ctx, struct{}{}, nil))
 
-	op := hedge.New(db, ":8080", *spindleTable, *lockName, *logTable,
+	op := hedge.New(db, ":8080", *lockTable, *lockName, *logTable,
 		hedge.WithGroupSyncInterval(time.Second*5),
 		hedge.WithLeaderCallback(nil, func(d interface{}, m []byte) {
 			log.Println("callback:", string(m))

@@ -39,8 +39,13 @@ cd /clock-bound/clock-bound-ffi/
 /root/.cargo/bin/cargo build --release
 cp -v /clock-bound/clock-bound-ffi/include/clockbound.h /usr/include/
 cp -v /clock-bound/target/release/libclockbound.a /usr/lib/
+cp -v /clock-bound/target/release/libclockbound.a /usr/lib64/
 cp -v /clock-bound/target/release/libclockbound.so /usr/lib/
+cp -v /clock-bound/target/release/libclockbound.so /usr/lib64/
 
 METADATA_TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 INTERNAL_IP=$(curl -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
-echo "internal-ip: $INTERNAL_IP"
+mkdir -p /etc/spindle/
+echo -n "$INTERNAL_IP" > /etc/spindle/internal-ip
+# NOTE: This is not recommended! You can use, say, IAM role + Secrets Manager instead.
+echo -n "postgres://postgres:pass@location.rds.amazonaws.com:5432/db" > /etc/spindle/pg-dsn
