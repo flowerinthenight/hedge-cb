@@ -45,7 +45,7 @@ cp -v /clock-bound/target/release/libclockbound.so /usr/lib/
 
 METADATA_TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 INTERNAL_IP=$(curl -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
-mkdir -p /etc/spindle/
-echo -n "$INTERNAL_IP" > /etc/spindle/internal-ip
+mkdir -p /etc/hedge/
+echo -n "$INTERNAL_IP" > /etc/hedge/internal-ip
 # NOTE: This is not recommended! You can use, say, IAM role + Secrets Manager instead.
-echo -n "postgres://postgres:pass@location.rds.amazonaws.com:5432/db" > /etc/spindle/pg-dsn
+echo -n "postgres://postgres:pass@location.rds.amazonaws.com:5432/db" > /etc/hedge/pg-dsn
