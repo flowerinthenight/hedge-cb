@@ -47,5 +47,28 @@ METADATA_TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws
 INTERNAL_IP=$(curl -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
 mkdir -p /etc/hedge/
 echo -n "$INTERNAL_IP" > /etc/hedge/internal-ip
-# NOTE: This is not recommended! You can use, say, IAM role + Secrets Manager instead.
+# NOTE: This is NOT recommended! You can use, say, IAM role + Secrets Manager instead.
 echo -n "postgres://postgres:pass@location.rds.amazonaws.com:5432/db" > /etc/hedge/pg-dsn
+cd / && wget https://github.com/flowerinthenight/hedge-cb/releases/download/v0.1.0/hedge-v0.1.0-x86_64-linux.tar.gz
+tar xvzf hedge-v0.1.0-x86_64-linux.tar.gz
+cp -v example /usr/local/bin/hedge
+chown root:root /usr/local/bin/hedge
+
+cat >/usr/lib/systemd/system/hedge.service <<EOL
+[Unit]
+Description=Hedge
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+ExecStart=/bin/bash -c '/usr/local/bin/hedge -db "$(cat /etc/hedge/pg-dsn)"'
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+systemctl daemon-reload
+systemctl enable hedge
+systemctl start hedge
+systemctl status hedge
