@@ -47,12 +47,15 @@ METADATA_TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws
 INTERNAL_IP=$(curl -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
 mkdir -p /etc/hedge/ && echo -n "$INTERNAL_IP" > /etc/hedge/internal-ip
 
-cd / && wget https://github.com/flowerinthenight/hedge-cb/releases/download/v0.1.0/hedge-v0.1.0-x86_64-linux.tar.gz
-tar xvzf hedge-v0.1.0-x86_64-linux.tar.gz
+SAMPLE_VERSION=v0.1.1
+cd / && wget https://github.com/flowerinthenight/hedge-cb/releases/download/$SAMPLE_VERSION/hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
+tar xvzf hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
 cp -v example /usr/local/bin/hedge
 chown root:root /usr/local/bin/hedge
 
-# NOTE: This is NOT recommended! You can use, say, IAM role + Secrets Manager instead.
+# NOTE: This is NOT recommended! You can use IAM role + Secrets Manager instead, for example.
+# The password will be visible under 'Advanced details' in 'Launch Templates', as well as
+# tools that can display command line arguments, like, htop.
 cat >/usr/lib/systemd/system/hedge.service <<EOL
 [Unit]
 Description=Hedge
