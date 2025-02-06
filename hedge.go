@@ -255,19 +255,13 @@ type Op struct {
 }
 
 // String implements the Stringer interface.
-func (op *Op) String() string {
-	return fmt.Sprintf("hostport:%s;spindle:%v;%v",
-		op.hostPort,
-		op.lockTable,
-		op.logTable,
-	)
-}
+func (op *Op) String() string { return op.HostPort() }
 
 // HostPort returns the host:port (or name) of this instance.
 func (op *Op) HostPort() string { return op.hostPort }
 
 // Name is the same as HostPort.
-func (op *Op) Name() string { return op.hostPort }
+func (op *Op) Name() string { return op.HostPort() }
 
 // IsRunning returns true if Op is already running.
 func (op *Op) IsRunning() bool { return op.active.Load() == 1 }
@@ -587,7 +581,7 @@ func (op *Op) Send(ctx context.Context, msg []byte) ([]byte, error) {
 
 	// If not ACK, then the whole reply is an error string.
 	b, _ := base64.StdEncoding.DecodeString(reply)
-	return nil, fmt.Errorf(string(b))
+	return nil, fmt.Errorf("%v", string(b))
 }
 
 type StreamToLeaderOutput struct {
