@@ -53,3 +53,7 @@ $ tail -f /var/log/cloud-init-output.log
 # Tail the service logs:
 $ journalctl -f -u hedge
 ```
+
+## License
+
+This library is licensed under the [Apache 2.0 License](./LICENSE).
