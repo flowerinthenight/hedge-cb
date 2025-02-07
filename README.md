@@ -68,6 +68,10 @@ $ curl -v localhost:9090/send -d "hello-leader"
 $ curl -v localhost:9090/broadcast -d "hello-all"
 ```
 
+<p align="left">
+  <img src="./assets/hedge-cb.png" title="hedge">
+</p>
+
 ## License
 
 This library is licensed under the [Apache 2.0 License](./LICENSE).
