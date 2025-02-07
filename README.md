@@ -2,7 +2,7 @@
 
 ## hedge-cb
 
-An AWS-native cluster membership library. It is built on top of [aws/clock-bound](https://github.com/aws/clock-bound) (via [spindle-cb](https://github.com/flowerinthenight/spindle-cb)), making [CGO](https://pkg.go.dev/cmd/cgo) a requirement. It is a port (subset only) of [hedge](https://github.com/flowerinthenight/hedge). Included features from `hedge` include:
+An AWS-native cluster membership library for [Go](https://go.dev/). It is built on top of [aws/clock-bound](https://github.com/aws/clock-bound) (via [spindle-cb](https://github.com/flowerinthenight/spindle-cb)), making [CGO](https://pkg.go.dev/cmd/cgo) a requirement. It is a port (subset only) of [hedge](https://github.com/flowerinthenight/hedge). Included features from `hedge` include:
 
 * Dynamic tracking of member nodes - good for clusters with members changing dynamically overtime, such as [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [GCP Instance Groups](https://cloud.google.com/compute/docs/instance-groups), [AWS Autoscaling Groups](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html), etc;
 * Leader election - it maintains a single leader node for the cluster;
