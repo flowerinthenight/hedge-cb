@@ -20,7 +20,7 @@ An AWS-native cluster membership library for [Go](https://go.dev/). It is built 
 
 ## Running the sample
 
-A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section first with a working connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
+A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section first with a working PostgreSQL connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
 
 ```sh
 # Create a launch template. ImageId here is Amazon Linux, default VPC.
