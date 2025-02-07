@@ -61,6 +61,12 @@ $ tail -f /var/log/cloud-init-output.log
 
 # Tail the service logs:
 $ journalctl -f -u hedge
+
+# Test the Send API (send message to current leader):
+$ curl -v localhost:9090/send -d "hello-leader"
+
+# Test the Broadcast API (send message to all nodes):
+$ curl -v localhost:9090/broadcast -d "hello-all"
 ```
 
 ## License
