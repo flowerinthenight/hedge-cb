@@ -2,7 +2,7 @@
 
 ## hedge-cb
 
-A cluster membership library specific for AWS. It is built on top of [aws/clock-bound](https://github.com/aws/clock-bound) (via [spindle-cb](https://github.com/flowerinthenight/spindle-cb)), making [CGO](https://pkg.go.dev/cmd/cgo) a requirement. It is a port (subset only) of [hedge](https://github.com/flowerinthenight/hedge).
+An AWS-native cluster membership library. It is built on top of [aws/clock-bound](https://github.com/aws/clock-bound) (via [spindle-cb](https://github.com/flowerinthenight/spindle-cb)), making [CGO](https://pkg.go.dev/cmd/cgo) a requirement. It is a port (subset only) of [hedge](https://github.com/flowerinthenight/hedge).
 
 A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section first with a working connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
 
