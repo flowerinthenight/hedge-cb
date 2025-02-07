@@ -224,7 +224,6 @@ type Op struct {
 	lockTable    string  // spindle lock table
 	lockName     string  // spindle lock name
 	lockTimeout  int64   // spindle's lock lease duration in ms
-	logTable     string  // append-only log table
 
 	cbLeader           spindle.FnLeaderCallback
 	cbLeaderData       interface{}
@@ -747,7 +746,7 @@ func (op *Op) Broadcast(ctx context.Context, msg []byte, args ...BroadcastArgs) 
 
 			// If not ACK, then the whole reply is an error string.
 			r, _ := base64.StdEncoding.DecodeString(reply)
-			outch <- BroadcastOutput{Id: id, Error: fmt.Errorf(string(r))}
+			outch <- BroadcastOutput{Id: id, Error: fmt.Errorf("%v", string(r))}
 		}(k)
 	}
 
@@ -1140,13 +1139,12 @@ func (op *Op) delMember(id string) {
 // spindle object's lock table name will be lockTable, and lockName is the lock name. logTable will
 // serve as our append-only, distributed key/value storage table. If logTable is empty, Put, Get, and
 // Semaphore features will be disabled.
-func New(db *sql.DB, hostPort, lockTable, lockName, logTable string, opts ...Option) *Op {
+func New(db *sql.DB, hostPort, lockTable, lockName string, opts ...Option) *Op {
 	op := &Op{
 		hostPort:   hostPort,
 		db:         db,
 		lockTable:  lockTable,
 		lockName:   lockName,
-		logTable:   logTable,
 		members:    make(map[string]struct{}),
 		ensureCh:   make(chan string),
 		ensureDone: make(chan struct{}, 1),
