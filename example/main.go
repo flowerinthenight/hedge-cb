@@ -257,6 +257,7 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
+	// NOTE: Untested, not officially supported yet.
 	mux.HandleFunc("/sos", func(w http.ResponseWriter, r *http.Request) {
 		defer func(start time.Time) {
 			slog.Info("distmem:", "duration", time.Since(start))
@@ -398,6 +399,7 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
+	// NOTE: Untested, not officially supported yet.
 	// NOTE: Used only on my local environment.
 	mux.HandleFunc("/soslocal", func(w http.ResponseWriter, r *http.Request) {
 		defer func(start time.Time) {
