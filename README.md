@@ -11,6 +11,13 @@ An AWS-native cluster membership library for [Go](https://go.dev/). It is built 
 * [Streaming] Send - any member node can send messages to the leader at any time;
 * [Streaming] Broadcast - any member node can broadcast messages to all nodes at any time.
 
+## Runtime requirements
+
+* A PostgreSQL database - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
+* The ClockBound daemon - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
+* All nodes within a cluster should be able to contact each other via TCP (address:port).
+* Each hedge-cb's instance id should be set using the node's address:port.
+
 ## Running the sample
 
 A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section first with a working connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
