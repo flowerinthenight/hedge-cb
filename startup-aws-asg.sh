@@ -47,7 +47,7 @@ METADATA_TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws
 INTERNAL_IP=$(curl -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
 mkdir -p /etc/hedge/ && echo -n "$INTERNAL_IP" > /etc/hedge/internal-ip
 
-SAMPLE_VERSION=v0.1.1
+SAMPLE_VERSION=v0.1.2
 cd / && wget https://github.com/flowerinthenight/hedge-cb/releases/download/$SAMPLE_VERSION/hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
 tar xvzf hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
 cp -v example /usr/local/bin/hedge
