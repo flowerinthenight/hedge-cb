@@ -11,7 +11,7 @@ An AWS-native cluster membership library for [Go](https://go.dev/). It is built 
 * [Streaming] Send - any member node can send messages to the leader at any time;
 * [Streaming] Broadcast - any member node can broadcast messages to all nodes at any time.
 
-## Runtime requirements
+## Requirements
 
 * A PostgreSQL database - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
 * The [ClockBound daemon](https://github.com/aws/clock-bound/tree/main/clock-bound-d) - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
