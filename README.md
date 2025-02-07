@@ -7,6 +7,7 @@ An AWS-native cluster membership library for [Go](https://go.dev/). It is built 
 
 * Tracking of member nodes - good for clusters with members changing dynamically overtime, such as [AWS Autoscaling Groups](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html), and [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/);
 * Leader election - the cluster elects and maintains a single leader node at all times;
+* Get members - get a list of all member nodes at any time;
 * [Streaming] Send - any member node can send messages to the leader at any time;
 * [Streaming] Broadcast - any member node can broadcast messages to all nodes at any time.
 
