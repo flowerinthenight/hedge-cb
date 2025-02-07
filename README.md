@@ -2,7 +2,7 @@
 
 WIP: A port of [hedge](https://github.com/flowerinthenight/hedge) for AWS.
 
-A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running.
+A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section for the real connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
 
 ```sh
 # Create a launch template. ImageId here is Amazon Linux, default VPC.
