@@ -6,7 +6,7 @@
 An AWS-native cluster membership library for [Go](https://go.dev/). It is built on top of [spindle-cb](https://github.com/flowerinthenight/spindle-cb), making [aws/clock-bound](https://github.com/aws/clock-bound), and [CGO](https://pkg.go.dev/cmd/cgo) a requirement. It is a port (subset only) of [hedge](https://github.com/flowerinthenight/hedge). Included features from `hedge` include:
 
 * Dynamic tracking of member nodes - good for clusters with members changing dynamically overtime, such as [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [GCP Instance Groups](https://cloud.google.com/compute/docs/instance-groups), [AWS Autoscaling Groups](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html), etc;
-* Leader election - it maintains a single leader node for the cluster;
+* Leader election - the cluster elects and maintains a single leader node at all times;
 * [Streaming] Send - any member node can send messages to the leader at any time;
 * [Streaming] Broadcast - any member node can broadcast messages to all nodes at any time.
 
