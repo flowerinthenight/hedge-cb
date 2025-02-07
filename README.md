@@ -53,7 +53,6 @@ $ aws autoscaling create-auto-scaling-group \
   --tags Key=Name,Value=hedge-asg \
   --vpc-zone-identifier "{subnet1,subnet2,subnet3}"
 
-
 # You can now SSH to the instance. Note that it might take some time before
 # ClockBound is running due to the need to build it in Rust. You can wait
 # for the `clockbound` process, or tail the startup script output, like so:
