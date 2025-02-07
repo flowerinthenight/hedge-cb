@@ -1,6 +1,8 @@
 [![main](https://github.com/flowerinthenight/hedge-cb/actions/workflows/main.yml/badge.svg)](https://github.com/flowerinthenight/hedge-cb/actions/workflows/main.yml)
 
-WIP: A port of [hedge](https://github.com/flowerinthenight/hedge) for AWS.
+## hedge-cb
+
+A cluster membership library (port (subset) of [hedge](https://github.com/flowerinthenight/hedge) for AWS, built on top of [aws/clock-bound](https://github.com/aws/clock-bound) (via [spindle-cb](https://github.com/flowerinthenight/spindle-cb)).
 
 A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section first with a working connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
 
