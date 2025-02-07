@@ -7,7 +7,7 @@ An AWS-native cluster membership library. It is built on top of [aws/clock-bound
 * Dynamic tracking of member nodes - good for clusters with members changing dynamically overtime, such as [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [GCP Instance Groups](https://cloud.google.com/compute/docs/instance-groups), [AWS Autoscaling Groups](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html), etc;
 * Leader election - it maintains a single leader node for the cluster;
 * [Streaming] Send - any member node can send messages to the leader at any time;
-* [Streaming] Broadcast - any member node can broadcast messages to all nodes.
+* [Streaming] Broadcast - any member node can broadcast messages to all nodes at any time.
 
 A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinning up an [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) with the ClockBound daemon already setup and running. You need to update the `ExecStart` section first with a working connection value. Note that this is NOT recommended though. You should use something like IAM Role + Secrets Manager, for instance.
 
