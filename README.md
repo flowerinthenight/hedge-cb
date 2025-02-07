@@ -15,8 +15,8 @@ An AWS-native cluster membership library for [Go](https://go.dev/). It is built 
 
 * A PostgreSQL database - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
 * The [ClockBound daemon](https://github.com/aws/clock-bound/tree/main/clock-bound-d) - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
-* All nodes within a cluster should be able to contact each other via TCP (address:port).
-* Each hedge-cb's instance id should be set using the node's address:port. This can be inferred internally as well.
+* All nodes within a cluster should be able to contact each other via TCP (host:port).
+* Each hedge-cb's instance id should be set using the node's host:port. The host part can be inferred internally as well.
 
 ## Running the sample
 
