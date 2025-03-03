@@ -85,12 +85,12 @@ func main() {
 
 	op := hedge.New(db, ":8080", *lockTable, *lockName,
 		hedge.WithGroupSyncInterval(time.Second*5),
-		hedge.WithLeaderCallback(nil, func(d interface{}, m []byte) {
+		hedge.WithLeaderCallback(nil, func(d any, m []byte) {
 			log.Println("callback:", string(m))
 		}),
 		hedge.WithLeaderHandler(
 			nil, // since this is nil, 'data' should be 'op'
-			func(data interface{}, msg []byte) ([]byte, error) {
+			func(data any, msg []byte) ([]byte, error) {
 				op := data.(*hedge.Op)
 				hostname, _ := os.Hostname()
 				name := fmt.Sprintf("%v/%v", hostname, op.Name())
@@ -102,7 +102,7 @@ func main() {
 		),
 		hedge.WithBroadcastHandler(
 			nil, // since this is nil, 'data' should be 'op'
-			func(data interface{}, msg []byte) ([]byte, error) {
+			func(data any, msg []byte) ([]byte, error) {
 				op := data.(*hedge.Op)
 				hostname, _ := os.Hostname()
 				name := fmt.Sprintf("%v/%v", hostname, op.Name())
