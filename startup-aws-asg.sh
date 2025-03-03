@@ -39,11 +39,8 @@ METADATA_TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws
 INTERNAL_IP=$(curl -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
 mkdir -p /etc/hedge/ && echo -n "$INTERNAL_IP" > /etc/hedge/internal-ip
 
-SAMPLE_VERSION_URL=$(curl -s https://api.github.com/repos/flowerinthenight/hedge-cb/releases/latest | jq -r ".assets[] | select(.name | contains(\"$(uname -s | awk '{print tolower($0)}')\")) | .browser_download_url")
-echo -n "$SAMPLE_VERSION_URL" > /etc/hedge/sample-download-url
-
-SAMPLE_VERSION=v0.1.3
-cd / && wget https://github.com/flowerinthenight/hedge-cb/releases/download/$SAMPLE_VERSION/hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
+SAMPLE_VERSION=$(curl -s https://api.github.com/repos/flowerinthenight/hedge-cb/releases/latest | jq -r ".tag_name")
+cd /tmp/ && wget https://github.com/flowerinthenight/hedge-cb/releases/download/$SAMPLE_VERSION/hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
 tar xvzf hedge-$SAMPLE_VERSION-x86_64-linux.tar.gz
 cp -v example /usr/local/bin/hedge
 chown root:root /usr/local/bin/hedge
