@@ -24,6 +24,7 @@ A sample cloud-init [startup script](./startup-aws-asg.sh) is provided for spinn
 
 ```sh
 # Create a launch template. ImageId here is Amazon Linux, default VPC.
+# You can remove the "KeyName" line if SSH access is not needed.
 # (Added newlines for readability. Might not run when copied as is.)
 $ aws ec2 create-launch-template \
   --launch-template-name hedge-lt \
@@ -31,8 +32,9 @@ $ aws ec2 create-launch-template \
   --launch-template-data '
   {
     "UserData":"'"$(cat startup-aws-asg.sh | base64 -w 0)"'",
-    "ImageId":"ami-0fb04413c9de69305",
-    "InstanceType":"t2.micro",
+    "ImageId":"ami-0fe289b44779ce58a",
+    "InstanceType":"t3.medium",
+    "KeyName":"keyName"
   }'
 
 # Create the single-zone ASG; update {target-zone} with actual value:
