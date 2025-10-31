@@ -10,6 +10,9 @@ systemctl restart chronyd
 systemctl status chronyd
 cp -v /clock-bound/target/release/clockbound /usr/local/bin/clockbound
 chown chrony:chrony /usr/local/bin/clockbound
+mkdir -p /run/clockbound
+chmod 775 /run/clockbound
+chown chrony:chrony /run/clockbound
 
 cat >/usr/lib/systemd/system/clockbound.service <<EOL
 [Unit]
@@ -19,7 +22,7 @@ Description=ClockBound
 Type=simple
 Restart=always
 RestartSec=10
-ExecStart=/usr/local/bin/clockbound --max-drift-rate 50
+ExecStart=/usr/local/bin/clockbound --max-drift-rate 50 --disable-clock-disruption-support
 RuntimeDirectory=clockbound
 RuntimeDirectoryPreserve=yes
 WorkingDirectory=/run/clockbound
