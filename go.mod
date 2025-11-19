@@ -6,21 +6,21 @@ require (
 	github.com/apache/arrow/go/v17 v17.0.0
 	github.com/cespare/xxhash/v2 v2.3.0
 	github.com/flowerinthenight/hedge-proto v0.1.0
-	github.com/flowerinthenight/spindle-cb v0.1.15
+	github.com/flowerinthenight/spindle-cb v0.1.16
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.15.0
 	github.com/hashicorp/memberlist v0.5.3
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/shirou/gopsutil/v4 v4.25.9
 	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c
-	golang.org/x/sync v0.17.0
-	google.golang.org/grpc v1.76.0
+	golang.org/x/sync v0.18.0
+	google.golang.org/grpc v1.77.0
 )
 
 require (
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/ebitengine/purego v0.9.0 // indirect
-	github.com/flowerinthenight/clockbound-ffi-go v0.1.30 // indirect
+	github.com/flowerinthenight/clockbound-ffi-go v0.1.31 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/google/btree v1.1.3 // indirect
@@ -44,15 +44,15 @@ require (
 	github.com/tklauser/numcpus v0.10.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
-	golang.org/x/crypto v0.43.0 // indirect
+	golang.org/x/crypto v0.44.0 // indirect
 	golang.org/x/mod v0.29.0 // indirect
-	golang.org/x/net v0.46.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/telemetry v0.0.0-20251008203120-078029d740a8 // indirect
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/tools v0.38.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
-	google.golang.org/api v0.254.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
+	google.golang.org/api v0.256.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251111163417-95abcf5c77ba // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
