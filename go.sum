@@ -24,10 +24,14 @@ github.com/ebitengine/purego v0.9.0 h1:mh0zpKBIXDceC63hpvPuGLiJ8ZAa3DfrFTudmfi8A
 github.com/ebitengine/purego v0.9.0/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/flowerinthenight/clockbound-ffi-go v0.1.31 h1:fyiwfiaTHE389jxSC2EQiG7wEY7y7wLIv8EEnGKAiKs=
 github.com/flowerinthenight/clockbound-ffi-go v0.1.31/go.mod h1:LPrvpfRydmfYw2suB0iWoIWO7i65RjxQ30fF7/v3s1U=
+github.com/flowerinthenight/clockbound-ffi-go v0.1.32 h1:bC4R1H78S8eP1R8wOFCzntZBimPDitqFYtZR/Wyfnhw=
+github.com/flowerinthenight/clockbound-ffi-go v0.1.32/go.mod h1:LPrvpfRydmfYw2suB0iWoIWO7i65RjxQ30fF7/v3s1U=
 github.com/flowerinthenight/hedge-proto v0.1.0 h1:JnFbUGrTddE8wlxyzxzEa3ZVhZX8svJ3GAY1v5vmB1E=
 github.com/flowerinthenight/hedge-proto v0.1.0/go.mod h1:MX38DIqqM328L1TbbUcBmqEyo7eY7znOSdyKwakc6Rg=
 github.com/flowerinthenight/spindle-cb v0.1.16 h1:SzONjP6UunpZkd0KbMu8R1O28PHz+NUW3k+H9NNxyDk=
 github.com/flowerinthenight/spindle-cb v0.1.16/go.mod h1:WV7t/X1rxTMCbIvTYqCAP0Wy5g2J7I1IX5BgoR7BpcU=
+github.com/flowerinthenight/spindle-cb v0.1.17 h1:RCSGdiedi7OupMYhrunFpDDgIRkmjKrcVylVVmc7Ydw=
+github.com/flowerinthenight/spindle-cb v0.1.17/go.mod h1:i4JoG813020cDMF3KEC6qmHSW+3oTfikrvyNgBBePXg=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-kit/kit v0.9.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vbaY=
@@ -262,6 +266,8 @@ google.golang.org/genproto/googleapis/api v0.0.0-20251022142026-3a174f9686a8 h1:
 google.golang.org/genproto/googleapis/api v0.0.0-20251022142026-3a174f9686a8/go.mod h1:fDMmzKV90WSg1NbozdqrE64fkuTv6mlq2zxo9ad+3yo=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20251111163417-95abcf5c77ba h1:UKgtfRM7Yh93Sya0Fo8ZzhDP4qBckrrxEr2oF5UIVb8=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20251111163417-95abcf5c77ba/go.mod h1:7i2o+ce6H/6BluujYR+kqX3GKH+dChPTQU19wjRPiGk=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20251124214823-79d6a2a48846 h1:Wgl1rcDNThT+Zn47YyCXOXyX/COgMTIdhJ717F0l4xk=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20251124214823-79d6a2a48846/go.mod h1:7i2o+ce6H/6BluujYR+kqX3GKH+dChPTQU19wjRPiGk=
 google.golang.org/grpc v1.77.0 h1:wVVY6/8cGA6vvffn+wWK5ToddbgdU3d8MNENr4evgXM=
 google.golang.org/grpc v1.77.0/go.mod h1:z0BY1iVj0q8E1uSQCjL9cppRj+gnZjzDnzV0dHhrNig=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=

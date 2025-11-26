@@ -3,7 +3,7 @@ COPY . /go/src/github.com/flowerinthenight/hedge-cb/
 WORKDIR /go/src/github.com/flowerinthenight/hedge-cb/example/
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates xz-utils && rm -rf /var/lib/apt/lists/* && \
     curl https://sh.rustup.rs -sSf | bash -s -- -y
-RUN . "$HOME/.cargo/env"; ROOTDIR=$PWD; cd /tmp/ && git clone https://github.com/aws/clock-bound && \
+RUN . "$HOME/.cargo/env"; ROOTDIR=$PWD; cd /tmp/ && git clone --single-branch -b main-2.0 https://github.com/aws/clock-bound && \
     cp -v clock-bound/clock-bound-ffi/include/clockbound.h /usr/include/ && \
     cd /tmp/clock-bound/clock-bound-ffi/ && \
     rustup target add x86_64-unknown-linux-musl && \

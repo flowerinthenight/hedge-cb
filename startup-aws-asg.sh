@@ -1,7 +1,7 @@
 #!/bin/bash
 yum install -y gcc git
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-git clone https://github.com/aws/clock-bound
+git clone --single-branch -b main-2.0 https://github.com/aws/clock-bound
 cd /clock-bound/clock-bound-d/
 /root/.cargo/bin/cargo build --release
 echo '# Ref: https://github.com/aws/clock-bound/tree/main/clock-bound-d' >> /etc/chrony.d/clockbound.conf
