@@ -1,6 +1,9 @@
 [![main](https://github.com/flowerinthenight/hedge-cb/actions/workflows/main.yml/badge.svg)](https://github.com/flowerinthenight/hedge-cb/actions/workflows/main.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/flowerinthenight/hedge-cb.svg)](https://pkg.go.dev/github.com/flowerinthenight/hedge-cb)
 
+> [!IMPORTANT]  
+> This library is still using the `main-2.0` branch of the [ClockBound daemon](https://github.com/aws/clock-bound).
+
 ## hedge-cb
 
 An AWS-native, cluster membership [Go](https://go.dev/) library. It is built on [spindle-cb](https://github.com/flowerinthenight/spindle-cb), a distributed locking library built on [aws/clock-bound](https://github.com/aws/clock-bound) and PostgreSQL. It is a port (subset only) of [hedge](https://github.com/flowerinthenight/hedge). Ported features include:
@@ -14,7 +17,7 @@ An AWS-native, cluster membership [Go](https://go.dev/) library. It is built on 
 ## Requirements
 
 * A PostgreSQL database - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
-* The [ClockBound daemon](https://github.com/aws/clock-bound/tree/main/clock-bound-d) - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
+* The [ClockBound daemon](https://github.com/aws/clock-bound) - a requirement of [spindle-cb](https://github.com/flowerinthenight/spindle-cb).
 * All nodes within a cluster should be able to contact each other via TCP (host:port).
 * Each hedge-cb's instance id should be set using the node's host:port. The host part can be inferred internally as well.
 
